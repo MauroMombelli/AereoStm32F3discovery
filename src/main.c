@@ -89,8 +89,6 @@ int main(void)
     //printf("\fstarting read PPM\n\r");
     init_read_pwm();
 
-    STM_EVAL_LEDToggle(LED6);
-
     //printf("\fstarting loop\n\r");
     uint16_t pwmTest = PWM_MIN;
 
@@ -104,11 +102,16 @@ int main(void)
 		 */
 		/*
 		setPwm(pwmTest, ppm_value[1], ppm_value[2], ppm_value[3]);
-
-		if (ppm_value[4] > 1500){
-			STM_EVAL_LEDToggle(LED7);
-		}
 		*/
+		int i;
+		for (i=0; i < 6; i++){
+			if (ppm_value[i] == 1){
+				STM_EVAL_LEDOn(LED4+i);
+			}else{
+				STM_EVAL_LEDOff(LED4+i);
+			}
+		}
+
 
 		/* Toggle LD3; means everything is ok :) */
 		STM_EVAL_LEDToggle(LED3);
