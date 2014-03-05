@@ -78,14 +78,27 @@ void init_read_pwm() {
 
 }
 
+void handle_pwm_change(uint8_t i){
+	uint8_t stato = GPIOD->IDR & (1<<i);
+
+	i--;//to match array index
+
+	if (stato){//pin == HIGH
+		if (high_start[i] == 0){
+			high_start[i] = micros();
+		}
+	}else{//pin == LOW
+		if (high_start[i] != 0){
+			ppm_value[i] = micros() - high_start[i];
+			high_start[i] = 0;
+		}
+	}
+}
+
 void EXTI1_IRQHandler(void) {
 	//Check if EXTI_Line0 is asserted
 	if (EXTI_GetITStatus(EXTI_Line1) == SET) {
-		if (GPIOD->IDR & GPIO_Pin_1) {
-			ppm_value[0] = 1;
-		} else {
-			ppm_value[0] = 0;
-		}
+		handle_pwm_change(1);
 	}
 	//we need to clear line pending bit manually
 	EXTI_ClearITPendingBit(EXTI_Line1);
@@ -94,11 +107,7 @@ void EXTI1_IRQHandler(void) {
 void EXTI2_TS_IRQHandler(void) {
 	//Check if EXTI_Line0 is asserted
 	if (EXTI_GetITStatus(EXTI_Line2) == SET) {
-		if (GPIOD->IDR & GPIO_Pin_2) {
-			ppm_value[1] = 1;
-		} else {
-			ppm_value[1] = 0;
-		}
+		handle_pwm_change(2);
 	}
 	//we need to clear line pending bit manually
 	EXTI_ClearITPendingBit(EXTI_Line2);
@@ -107,11 +116,7 @@ void EXTI2_TS_IRQHandler(void) {
 void EXTI3_IRQHandler(void) {
 	//Check if EXTI_Line0 is asserted
 	if (EXTI_GetITStatus(EXTI_Line3) == SET) {
-		if (GPIOD->IDR & GPIO_Pin_3) {
-			ppm_value[2] = 1;
-		} else {
-			ppm_value[2] = 0;
-		}
+		handle_pwm_change(3);
 	}
 	//we need to clear line pending bit manually
 	EXTI_ClearITPendingBit(EXTI_Line3);
@@ -120,11 +125,7 @@ void EXTI3_IRQHandler(void) {
 void EXTI4_IRQHandler(void) {
 	//Check if EXTI_Line0 is asserted
 	if (EXTI_GetITStatus(EXTI_Line4) == SET) {
-		if (GPIOD->IDR & GPIO_Pin_4) {
-			ppm_value[3] = 1;
-		} else {
-			ppm_value[3] = 0;
-		}
+		handle_pwm_change(4);
 	}
 	//we need to clear line pending bit manually
 	EXTI_ClearITPendingBit(EXTI_Line4);
@@ -133,20 +134,11 @@ void EXTI4_IRQHandler(void) {
 void EXTI9_5_IRQHandler(void) {
 	//Check if EXTI_Line0 is asserted
 	if (EXTI_GetITStatus(EXTI_Line5) == SET) {
-		if (GPIOD->IDR & GPIO_Pin_5) {
-			ppm_value[4] = 1;
-		} else {
-			ppm_value[4] = 0;
-		}
+		handle_pwm_change(5);
 	}
 	EXTI_ClearITPendingBit(EXTI_Line5);
 	if (EXTI_GetITStatus(EXTI_Line6) == SET) {
-		if (GPIOD->IDR & GPIO_Pin_6) {
-			ppm_value[5] = 1;
-		} else {
-			ppm_value[5] = 0;
-		}
-
+		handle_pwm_change(6);
 	}
 	EXTI_ClearITPendingBit(EXTI_Line6);
 }

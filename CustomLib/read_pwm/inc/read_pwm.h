@@ -10,5 +10,6 @@
 
 extern uint16_t ppm_value[];
 extern void init_read_pwm(void);
+void handle_pwm_change(uint8_t);
 
 #endif /* READ_PPM_H_ */

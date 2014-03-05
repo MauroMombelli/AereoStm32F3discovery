@@ -9,7 +9,7 @@
 #include "common.h"
 
 
-__IO uint32_t timer_us = 1000;
+__IO uint32_t timer_us = 0;
 
 
 /**
