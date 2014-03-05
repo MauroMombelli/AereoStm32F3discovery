@@ -19,7 +19,6 @@
 #define PWM_MAX 1800
 
 void init_pwm_tim4(void);
-void init_pwm_tim2(void);
 
 extern void setPwm(uint16_t, uint16_t, uint16_t, uint16_t);
 

@@ -15,8 +15,9 @@
 #include <inttypes.h>
 
 #include "stm32f30x.h"
-#include "stm32f30x_it.h"
 #include "stm32f3_discovery.h"
+
+/*
 #include "stm32f3_discovery_lsm303dlhc.h"
 
 #include "usb_lib.h"
@@ -25,10 +26,11 @@
 #include "platform_config.h"
 #include "usb_istr.h"
 #include "usb_desc.h"
+*/
 
 #include "common.h"
-#include "usart.h"
+//#include "usart.h"
 #include "pwm.h"
-#include "read_ppm.h"
+#include "read_pwm.h"
 
 #endif /* MAIN_H_ */

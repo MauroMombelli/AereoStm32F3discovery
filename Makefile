@@ -19,8 +19,8 @@ SIZE		= $(TC)-size
 
 ###################################################
 # Set Sources
-LIB_SRCS	= $(wildcard Libraries/STM32F30x_StdPeriph_Driver/src/*.c Libraries/STM32_USB-FS-Device_Driver/src/*.c Libraries/STM32F3_Discovery/src/*.c)
-USER_SRCS	= $(wildcard src/*.c CustomLib/Goffredo_USB/src/*.c CustomLib/usbLib/src/*.c CustomLib/pwm/src/*.c CustomLib/usart/src/*.c CustomLib/clock/src/*.c CustomLib/read_ppm/src/*.c)
+LIB_SRCS	= $(wildcard Libraries/STM32F30x_StdPeriph_Driver/src/*.c Libraries/STM32F3_Discovery/src/*.c)
+USER_SRCS	= $(wildcard src/*.c CustomLib/pwm/src/*.c CustomLib/clock/src/*.c CustomLib/read_pwm/src/*.c)
 # Set Objects
 LIB_OBJS	= $(LIB_SRCS:.c=.o)
 USER_OBJS	= $(USER_SRCS:.c=.o) src/startup_stm32f30x.o
@@ -29,13 +29,10 @@ USER_OBJS	= $(USER_SRCS:.c=.o) src/startup_stm32f30x.o
 INCLUDES 	= -ILibraries/STM32F30x_StdPeriph_Driver/inc/ \
 			-ILibraries/CMSIS/Include/ \
 			-ILibraries/CMSIS/Device/ST/STM32F30x/Include/ \
-			-ILibraries/STM32_USB-FS-Device_Driver/inc/ \
 			-ILibraries/STM32F3_Discovery/inc/ \
-			-ICustomLib/Goffredo_USB/inc/ \
-			-ICustomLib/usbLib/inc/ \
 			-ICustomLib/pwm/inc/ \
 			-ICustomLib/clock/inc/ \
-			-ICustomLib/read_ppm/inc/ \
+			-ICustomLib/read_pwm/inc/ \
 			-ICustomLib/usart/inc/ \
 			-Iinc/
 			
