@@ -83,6 +83,7 @@ int main(void)
 
     //printf("\fstarting pwm\n\r");
     init_pwm_tim4(); //50Hz pwm
+    init_pwm_tim8();
 
     STM_EVAL_LEDToggle(LED5);
 
@@ -118,8 +119,14 @@ int main(void)
 		uint32_t tempo = micros();
 
 		pwmTest+=100;
-		if (pwmTest > PWM_MAX)
+
+		if (pwmTest > PWM_MAX){
 			pwmTest = PWM_MIN;
+		}
+
+		setServoSx(pwmTest);
+		setServoDx(pwmTest);
+
 
 		while ( micros()-tempo < DELAY*1000);//whait delay ms
 	}
