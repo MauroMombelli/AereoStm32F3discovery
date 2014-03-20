@@ -26,7 +26,6 @@
 /* Includes */
 #include <main.h>
 
-
 /* Private typedef */
 
 /* Private define  */
@@ -37,7 +36,7 @@
 /* Private variables */
 float a, b, c, d;
 RCC_ClocksTypeDef RCC_Clocks;
-TIM_ICInitTypeDef  TIM_ICInitStructure;
+TIM_ICInitTypeDef TIM_ICInitStructure;
 __IO uint32_t CCR1;
 
 /* Private function prototypes */
@@ -46,8 +45,6 @@ __IO uint32_t CCR1;
 
 /* Global variables */
 
-
-
 /**
  **===========================================================================
  **
@@ -55,8 +52,7 @@ __IO uint32_t CCR1;
  **
  **===========================================================================
  */
-int main(void)
-{
+int main(void) {
 	//uint32_t ii;
 
 	/* SysTick end of count event each 1us */
@@ -77,58 +73,63 @@ int main(void)
 	STM_EVAL_LEDInit(LED10);
 
 	//USART2_Init(115200, 1);//1 == interrupt, 0 == no interrupt
-    //printf("\fUSART2 initialized\n\r");
+	//printf("\fUSART2 initialized\n\r");
 
 	STM_EVAL_LEDToggle(LED4);
 
-    //printf("\fstarting pwm\n\r");
-    init_pwm_tim4(); //50Hz pwm
-    init_pwm_tim8();
+	//printf("\fstarting pwm\n\r");
+	init_pwm_tim4(); //50Hz pwm
+	init_pwm_tim8();
 
-    STM_EVAL_LEDToggle(LED5);
+	STM_EVAL_LEDToggle(LED5);
 
-    //printf("\fstarting read PPM\n\r");
-    init_read_pwm();
+	//printf("\fstarting read PPM\n\r");
+	init_read_pwm();
 
-    //printf("\fstarting loop\n\r");
-    uint16_t pwmTest = PWM_MIN;
+	//printf("\fstarting loop\n\r");
+	uint16_t pwmTest = PWM_MIN;
 
-	while (1)
-	{
+	uint32_t tempo_heart_beat = 0, tempo_pwm = 0;
+
+	while (1) {
 		/*
-		int i = 0;
-		for (i=0; i < 6; i++){
-			printf("PPM readed: %" PRIu32 " \n\r", ppm_value[i]);
-		}
+		 int i = 0;
+		 for (i=0; i < 6; i++){
+		 printf("PPM readed: %" PRIu32 " \n\r", ppm_value[i]);
+		 }
 		 */
 		/*
-		setPwm(pwmTest, ppm_value[1], ppm_value[2], ppm_value[3]);
-		*/
-		int i;
-		for (i=0; i < 6; i++){
-			if (ppm_value[i] == 1){
-				STM_EVAL_LEDOn(LED4+i);
-			}else{
-				STM_EVAL_LEDOff(LED4+i);
-			}
-		}
-
+		 setPwm(pwmTest, ppm_value[1], ppm_value[2], ppm_value[3]);
+		 */
+		/*
+		 int i;
+		 for (i=0; i < 6; i++){
+		 if (ppm_value[i] == 1){
+		 STM_EVAL_LEDOn(LED4+i);
+		 }else{
+		 STM_EVAL_LEDOff(LED4+i);
+		 }
+		 }
+		 */
 
 		/* Toggle LD3; means everything is ok :) */
-		STM_EVAL_LEDToggle(LED3);
-		uint32_t tempo = micros();
-
-		pwmTest+=100;
-
-		if (pwmTest > PWM_MAX){
-			pwmTest = PWM_MIN;
+		if (micros() - tempo_heart_beat > DELAY * 1000) {
+			STM_EVAL_LEDToggle(LED3);
+			tempo_heart_beat = micros();
 		}
 
-		setServoSx(pwmTest);
-		setServoDx(pwmTest);
+		if (micros() - tempo_pwm > 1000000UL) {
+			pwmTest += 100;
 
+			if (pwmTest > PWM_MAX) {
+				pwmTest = PWM_MIN;
+			}
 
-		while ( micros()-tempo < DELAY*1000);//whait delay ms
+			setServoSx(pwmTest);
+			setServoDx(pwmTest);
+			setEngine(pwmTest);
+			tempo_pwm = micros();
+		}
 	}
 
 	/* Program will never run to this line */

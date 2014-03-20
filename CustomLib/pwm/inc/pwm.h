@@ -13,10 +13,10 @@
 #include "stm32f3_discovery.h"
 #include "stm32f30x_conf.h"
 
-//BECAUSE 800
-#define PWM_STOP 1000
-#define PWM_MIN 1500
-#define PWM_MAX 2000
+//BECAUSE 800 will stop engines
+#define PWM_STOP 800
+#define PWM_MIN 1000
+#define PWM_MAX 2500
 
 void init_pwm_tim4(void);
 void init_pwm_tim8(void);

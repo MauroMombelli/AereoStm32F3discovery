@@ -7,6 +7,9 @@
 
 #include "pwm.h"
 
+uint16_t pwm_prescaler = (uint16_t) ((72000000 / 1000000) - 1); // Shooting for 1 MHz, (1us)
+uint32_t pwm_period = 20000;
+
 void init_pwm_tim4() {
 	GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -25,9 +28,7 @@ void init_pwm_tim4() {
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource13, GPIO_AF_2);
 	GPIO_PinAFConfig(GPIOD, GPIO_PinSource15, GPIO_AF_2);
 
-	uint16_t prescaler = (uint16_t) ((72000000 / 1000000) - 1); // Shooting for 1 MHz, (1us)
 
-	uint32_t pwm_period = 20000;
 
 	//  Enable the TIM4 peripherie
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
@@ -35,7 +36,7 @@ void init_pwm_tim4() {
 	// Setup the timing and configure the TIM1 timer
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 	TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-	TIM_TimeBaseStructure.TIM_Prescaler = prescaler;
+	TIM_TimeBaseStructure.TIM_Prescaler = pwm_prescaler;
 	TIM_TimeBaseStructure.TIM_Period = pwm_period - 1;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -87,17 +88,13 @@ void init_pwm_tim8() {
 	/* Connect TIM8 pins to AF2 */
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_4);
 
-	uint16_t prescaler = (uint16_t) ((72000000 / 1000000) - 1); // Shooting for 1 MHz, (1us)
-
-	uint32_t pwm_period = 20000;
-
 	//  Enable the TIM8 peripherie
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8, ENABLE);
 
 	// Setup the timing and configure the TIM1 timer
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 	TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-	TIM_TimeBaseStructure.TIM_Prescaler = prescaler;
+	TIM_TimeBaseStructure.TIM_Prescaler = pwm_prescaler;
 	TIM_TimeBaseStructure.TIM_Period = pwm_period - 1;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -128,35 +125,35 @@ void init_pwm_tim8() {
 
 }
 
-void setEngine(uint16_t msPwm) {
+void setEngine(uint16_t usPwm) {
 
-	if (msPwm < PWM_MIN) {
-		msPwm = PWM_MIN;
+	if (usPwm < PWM_MIN) {
+		usPwm = PWM_MIN;
 	}
-	if (msPwm > PWM_MAX) {
-		msPwm = PWM_MAX;
+	if (usPwm > PWM_MAX) {
+		usPwm = PWM_MAX;
 	}
-	TIM_SetCompare1(TIM8, msPwm);
+	TIM_SetCompare1(TIM8, usPwm);
 }
 
-void setServoSx(uint16_t msPwm) {
+void setServoSx(uint16_t usPwm) {
 
-	if (msPwm < PWM_MIN) {
-		msPwm = PWM_MIN;
+	if (usPwm < PWM_MIN) {
+		usPwm = PWM_MIN;
 	}
-	if (msPwm > PWM_MAX) {
-		msPwm = PWM_MAX;
+	if (usPwm > PWM_MAX) {
+		usPwm = PWM_MAX;
 	}
-	TIM_SetCompare2(TIM4, msPwm);
+	TIM_SetCompare2(TIM4, usPwm);
 }
 
-void setServoDx(uint16_t msPwm) {
+void setServoDx(uint16_t usPwm) {
 
-	if (msPwm < PWM_MIN) {
-		msPwm = PWM_MIN;
+	if (usPwm < PWM_MIN) {
+		usPwm = PWM_MIN;
 	}
-	if (msPwm > PWM_MAX) {
-		msPwm = PWM_MAX;
+	if (usPwm > PWM_MAX) {
+		usPwm = PWM_MAX;
 	}
-	TIM_SetCompare4(TIM4, msPwm);
+	TIM_SetCompare4(TIM4, usPwm);
 }
