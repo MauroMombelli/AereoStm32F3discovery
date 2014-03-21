@@ -72,62 +72,55 @@ int main(void) {
 	STM_EVAL_LEDInit(LED9);
 	STM_EVAL_LEDInit(LED10);
 
-	//USART2_Init(115200, 1);//1 == interrupt, 0 == no interrupt
-	//printf("\fUSART2 initialized\n\r");
-
+	//LED4 == init phase
 	STM_EVAL_LEDToggle(LED4);
 
 	//printf("\fstarting pwm\n\r");
-	init_pwm_tim4(); //50Hz pwm
+	init_pwm_tim4();
 	init_pwm_tim8();
 
-	STM_EVAL_LEDToggle(LED5);
+
 
 	//printf("\fstarting read PPM\n\r");
 	init_read_pwm();
 
 	//printf("\fstarting loop\n\r");
-	uint16_t pwmTest = PWM_MIN;
 
 	uint32_t tempo_heart_beat = 0, tempo_pwm = 0;
 
-	while (1) {
-		/*
-		 int i = 0;
-		 for (i=0; i < 6; i++){
-		 printf("PPM readed: %" PRIu32 " \n\r", ppm_value[i]);
-		 }
-		 */
-		/*
-		 setPwm(pwmTest, ppm_value[1], ppm_value[2], ppm_value[3]);
-		 */
-		/*
-		 int i;
-		 for (i=0; i < 6; i++){
-		 if (ppm_value[i] == 1){
-		 STM_EVAL_LEDOn(LED4+i);
-		 }else{
-		 STM_EVAL_LEDOff(LED4+i);
-		 }
-		 }
-		 */
+	//end init phase
+	STM_EVAL_LEDToggle(LED4);
 
-		/* Toggle LD3; means everything is ok :) */
-		if (micros() - tempo_heart_beat > DELAY * 1000) {
+
+	while (1) {
+
+		/* Toggle LD3 every second; means everything is ok :) */
+		if (micros() - tempo_heart_beat > DELAY * 1000UL) {
 			STM_EVAL_LEDToggle(LED3);
 			tempo_heart_beat = micros();
 		}
 
-		if (micros() - tempo_pwm > 1000000UL) {
-			pwmTest += 100;
+		if (micros() - tempo_pwm > 50000UL) {//every 10ms
+			unsigned int pwmSx = 1500, pwmDx = 1500, pwmEngine = ppm_value[4];
 
-			if (pwmTest > PWM_MAX) {
-				pwmTest = PWM_MIN;
+			if (ppm_value[0] != 0 && ppm_value[2] != 0){ // sx/dx
+				unsigned long tmp =ppm_value[0]-1500;
+
+				pwmSx += tmp;
+				pwmDx = pwmSx;
+
+				ppm_value[0] = 0;
+
+				tmp = ppm_value[2]-1500UL;
+				pwmSx += tmp;
+				pwmDx -= tmp;
+
+				ppm_value[2] = 0;
 			}
 
-			setServoSx(pwmTest);
-			setServoDx(pwmTest);
-			setEngine(pwmTest);
+			setServoSx(pwmSx);//because servo are mountet specular!! yay!
+			setServoDx(pwmDx);
+			setEngine(pwmEngine);
 			tempo_pwm = micros();
 		}
 	}
