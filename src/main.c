@@ -29,10 +29,10 @@
 /* Private typedef */
 
 /* Private define  */
-#define USE_RX
+//#define USE_RX
 #define USE_QUATERNION
 #define DELAY	(1000)
-#define gyroToRad (2293.76/32768)*0.0174532925
+#define gyroToRad (2293.76f/32768)*0.0174532925f
 
 
 /* Private macro */
@@ -57,14 +57,11 @@ __IO uint32_t CCR1;
  **===========================================================================
  */
 int main(void) {
-	//uint32_t ii;
-
 	/* SysTick end of count event each 1us */
 	RCC_GetClocksFreq(&RCC_Clocks);
 	SysTick_Config((RCC_Clocks.HCLK_Frequency / 1000000UL));
 
 	SystemCoreClockUpdate();
-	//ii = SystemCoreClock;   /* This is a way to read the System core clock */
 
 	/* Initialize LEDs and User Button available on STM32F3-Discovery board */
 	STM_EVAL_LEDInit(LED3);
@@ -83,12 +80,19 @@ int main(void) {
 	init_pwm_tim4();
 	init_pwm_tim8();
 
+#ifdef USE_QUATERNION
 	Gyro_Config();
-
 	Compass_Config();
 
+	uint16_t gyro[3] = {0}, acc[3] = {0}, magne[3] = {0};
+	float quaternion[4];
+	float ypr[3];
+#endif
+
 	//printf("\fstarting read PPM\n\r");
+#ifdef USE_RX
 	init_read_pwm();
+#endif
 
 	//printf("\fstarting loop\n\r");
 
@@ -96,10 +100,6 @@ int main(void) {
 
 	//end init phase
 	STM_EVAL_LEDToggle(LED4);
-
-	uint16_t gyro[3], acc[3], magne[3];
-	float quaternion[4];
-	float ypr[3];
 
 	while (1) {
 
@@ -109,34 +109,36 @@ int main(void) {
 			tempo_heart_beat = micros();
 		}
 
+#ifdef USE_QUATERNION
 		Compass_ReadAcc(acc);
 		Compass_ReadMag(magne);
 		if (Gyro_ReadAngRate(gyro)){
 			freeIMUUpdate(-gyro[0]*gyroToRad,-gyro[1]*gyroToRad, gyro[2]*gyroToRad, -acc[1], acc[0], acc[2], -magne[2], magne[0], magne[1]);
 		}
+#endif
 
 		if (micros() - tempo_pwm > 50000UL) {//every 10ms
 			uint32_t pwmSx = 1500, pwmDx = 1500, pwmEngine = ppm_value[4];
 
 			//QUATERNION CORRECION
-			#ifdef USE_QUATERNION
+#ifdef USE_QUATERNION
 			getQuaternion(quaternion);
 			quaternionToYawPitchRoll(ypr);
 
 			//TODO: test
 
-			uint32_t tmp = ypr[3]; //ROLL 0 = horizontal
+			float tmp = ypr[2] * 159.0f; //ROLL 0 = horizontal
 			pwmSx += tmp;
 			pwmDx += tmp;
-
-			tmp = ypr[2]; //PITCH 0 = horizontal
+/*
+			tmp = ypr[1]*159; //PITCH 0 = horizontal
 			pwmSx += tmp;
 			pwmDx -= tmp;
-
-			#endif
+*/
+#endif
 
 			//RX command
-			#ifdef USE_RX
+#ifdef USE_RX
 			if (ppm_value[0] != 0 && ppm_value[2] != 0){
 				uint32_t tmp =ppm_value[0]-1500; // SX/DX
 
@@ -151,7 +153,7 @@ int main(void) {
 
 				ppm_value[2] = 0;
 			}
-			#endif
+#endif
 
 			setServoSx(pwmSx);//because servo are mountet specular!! yay!
 			setServoDx(pwmDx);

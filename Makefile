@@ -45,8 +45,8 @@ LIBS		= -lm -lc
 ###################################################
 # Set Board
 MCU 		= -mthumb -mcpu=cortex-m4
-FPU 		= -mfpu=fpv4-sp-d16 -mfloat-abi=softfp
-DEFINES 	= -DSTM32F3XX -DUSE_STDPERIPH_DRIVER
+FPU 		= -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+DEFINES 	= -DSTM32F30X -DUSE_STDPERIPH_DRIVER -DARM_MATH_CM4
 
 # Set Compilation and Linking Flags
 CFLAGS 		= $(MCU) $(FPU) $(DEFINES) $(INCLUDES) \
@@ -60,11 +60,12 @@ LDFLAGS 	= $(MCU) $(FPU) -g -gdwarf-2\
 
 ###################################################
 # Default Target
-all: $(PROJ_NAME).bin info
+all: $(PROJ_NAME).hex $(PROJ_NAME).bin info
 
 # elf Target
 $(PROJ_NAME).elf: $(LIB_OBJS) $(USER_OBJS)
 	@$(CC) $(LIB_OBJS) $(USER_OBJS) $(LDFLAGS)
+	@echo $(CC) $(LIB_OBJS) $(USER_OBJS) $(LDFLAGS)
 	@echo $@
 
 # bin Target
@@ -72,9 +73,9 @@ $(PROJ_NAME).bin: $(PROJ_NAME).elf
 	@$(OBJCOPY) -O binary $(PROJ_NAME).elf $(PROJ_NAME).bin
 	@echo $@
 
-#$(PROJ_NAME).hex: $(PROJ_NAME).elf
-#	@$(OBJCOPY) -O ihex $(PROJ_NAME).elf $(PROJ_NAME).hex
-#	@echo $@
+$(PROJ_NAME).hex: $(PROJ_NAME).elf
+	@$(OBJCOPY) -O ihex $(PROJ_NAME).elf $(PROJ_NAME).hex
+	@echo $@
 
 #$(PROJ_NAME).lst: $(PROJ_NAME).elf
 #	@$(OBJDUMP) -h -S $(PROJ_NAME).elf > $(PROJ_NAME).lst
@@ -86,7 +87,7 @@ info: $(PROJ_NAME).elf
 
 # Rule for .c files
 .c.o:
-	@$(CC) $(CFLAGS) -c -o $@ $<
+	@$(CC) $(CFLAGS) -c -dM -o $@ $<
 	@echo $@
 
 # Rule for .s files
