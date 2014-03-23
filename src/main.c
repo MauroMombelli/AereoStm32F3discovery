@@ -29,7 +29,11 @@
 /* Private typedef */
 
 /* Private define  */
+#define USE_RX
+#define USE_QUATERNION
 #define DELAY	(1000)
+#define gyroToRad (2293.76/32768)*0.0174532925
+
 
 /* Private macro */
 
@@ -79,7 +83,9 @@ int main(void) {
 	init_pwm_tim4();
 	init_pwm_tim8();
 
+	Gyro_Config();
 
+	Compass_Config();
 
 	//printf("\fstarting read PPM\n\r");
 	init_read_pwm();
@@ -91,6 +97,9 @@ int main(void) {
 	//end init phase
 	STM_EVAL_LEDToggle(LED4);
 
+	uint16_t gyro[3], acc[3], magne[3];
+	float quaternion[4];
+	float ypr[3];
 
 	while (1) {
 
@@ -100,23 +109,49 @@ int main(void) {
 			tempo_heart_beat = micros();
 		}
 
-		if (micros() - tempo_pwm > 50000UL) {//every 10ms
-			unsigned int pwmSx = 1500, pwmDx = 1500, pwmEngine = ppm_value[4];
+		Compass_ReadAcc(acc);
+		Compass_ReadMag(magne);
+		if (Gyro_ReadAngRate(gyro)){
+			freeIMUUpdate(-gyro[0]*gyroToRad,-gyro[1]*gyroToRad, gyro[2]*gyroToRad, -acc[1], acc[0], acc[2], -magne[2], magne[0], magne[1]);
+		}
 
-			if (ppm_value[0] != 0 && ppm_value[2] != 0){ // sx/dx
-				unsigned long tmp =ppm_value[0]-1500;
+		if (micros() - tempo_pwm > 50000UL) {//every 10ms
+			uint32_t pwmSx = 1500, pwmDx = 1500, pwmEngine = ppm_value[4];
+
+			//QUATERNION CORRECION
+			#ifdef USE_QUATERNION
+			getQuaternion(quaternion);
+			quaternionToYawPitchRoll(ypr);
+
+			//TODO: test
+
+			uint32_t tmp = ypr[3]; //ROLL 0 = horizontal
+			pwmSx += tmp;
+			pwmDx += tmp;
+
+			tmp = ypr[2]; //PITCH 0 = horizontal
+			pwmSx += tmp;
+			pwmDx -= tmp;
+
+			#endif
+
+			//RX command
+			#ifdef USE_RX
+			if (ppm_value[0] != 0 && ppm_value[2] != 0){
+				uint32_t tmp =ppm_value[0]-1500; // SX/DX
 
 				pwmSx += tmp;
-				pwmDx = pwmSx;
+				pwmDx += tmp;
 
 				ppm_value[0] = 0;
 
-				tmp = ppm_value[2]-1500UL;
+				tmp = ppm_value[2]-1500UL; // UP/DOWN
 				pwmSx += tmp;
 				pwmDx -= tmp;
 
 				ppm_value[2] = 0;
 			}
+			#endif
 
 			setServoSx(pwmSx);//because servo are mountet specular!! yay!
 			setServoDx(pwmDx);

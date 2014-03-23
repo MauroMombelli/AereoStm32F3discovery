@@ -32,5 +32,7 @@
 //#include "usart.h"
 #include "pwm.h"
 #include "read_pwm.h"
+#include "sensors.h"
+#include "dcm.h"
 
 #endif /* MAIN_H_ */

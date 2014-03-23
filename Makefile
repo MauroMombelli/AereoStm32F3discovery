@@ -20,7 +20,7 @@ SIZE		= $(TC)-size
 ###################################################
 # Set Sources
 LIB_SRCS	= $(wildcard Libraries/STM32F30x_StdPeriph_Driver/src/*.c Libraries/STM32F3_Discovery/src/*.c)
-USER_SRCS	= $(wildcard src/*.c CustomLib/pwm/src/*.c CustomLib/clock/src/*.c CustomLib/read_pwm/src/*.c)
+USER_SRCS	= $(wildcard src/*.c CustomLib/pwm/src/*.c CustomLib/clock/src/*.c CustomLib/read_pwm/src/*.c CustomLib/sensors/src/*.c CustomLib/dcm/src/*.c)
 # Set Objects
 LIB_OBJS	= $(LIB_SRCS:.c=.o)
 USER_OBJS	= $(USER_SRCS:.c=.o) src/startup_stm32f30x.o
@@ -34,6 +34,8 @@ INCLUDES 	= -ILibraries/STM32F30x_StdPeriph_Driver/inc/ \
 			-ICustomLib/clock/inc/ \
 			-ICustomLib/read_pwm/inc/ \
 			-ICustomLib/usart/inc/ \
+			-ICustomLib/sensors/inc/ \
+			-ICustomLib/dcm/inc/ \
 			-Iinc/
 			
 			
