@@ -16,7 +16,7 @@
 //BECAUSE 800 will stop engines
 #define PWM_STOP 800UL
 #define PWM_MIN 1000UL
-#define PWM_MAX 2500UL
+#define PWM_MAX 2000UL
 
 void init_pwm_tim4(void);
 void init_pwm_tim8(void);

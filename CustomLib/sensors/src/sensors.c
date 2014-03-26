@@ -73,7 +73,7 @@ void Gyro_Config(void)
  * @param  pfData : Data out pointer
  * @retval None
  */
-uint8_t Gyro_ReadAngRate (uint16_t* pfData)
+uint8_t Gyro_ReadAngRate (int16_t* pfData)
 {
 	uint8_t tmpreg;
 
@@ -161,7 +161,7 @@ void Compass_Config(void)
  * @param pnData: pointer to float buffer where to store data
  * @retval None
  */
-uint8_t Compass_ReadAcc(uint16_t* pfData)
+uint8_t Compass_ReadAcc(int16_t* pfData)
 {
 
 	uint8_t tmpreg;
@@ -188,7 +188,7 @@ uint8_t Compass_ReadAcc(uint16_t* pfData)
  * @param  pfData: pointer to the data out
  * @retval None
  */
-uint8_t Compass_ReadMag (uint16_t* pfData)
+uint8_t Compass_ReadMag (int16_t* pfData)
 {
 
 	uint8_t tmpreg = 0;

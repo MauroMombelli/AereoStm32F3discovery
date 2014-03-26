@@ -84,7 +84,7 @@ int main(void) {
 	Gyro_Config();
 	Compass_Config();
 
-	uint16_t gyro[3] = {0}, acc[3] = {0}, magne[3] = {0};
+	int16_t gyro[3] = {0}, acc[3] = {0}, magne[3] = {0};
 	float quaternion[4];
 	float ypr[3];
 #endif
@@ -127,14 +127,14 @@ int main(void) {
 
 			//TODO: test
 
-			float tmp = ypr[2] * 159.0f; //ROLL 0 = horizontal
+			int16_t tmp = ypr[1] * 300; //ROLL 0 = horizontal
 			pwmSx += tmp;
 			pwmDx += tmp;
-/*
-			tmp = ypr[1]*159; //PITCH 0 = horizontal
+
+			tmp = ypr[2] * 300; //PITCH 0 = horizontal
 			pwmSx += tmp;
 			pwmDx -= tmp;
-*/
+
 #endif
 
 			//RX command
